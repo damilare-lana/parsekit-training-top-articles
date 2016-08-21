@@ -1,0 +1,63 @@
+###
+# hn_articles
+###
+
+dependencies:
+  "parsekit_tools.schema": "schema"
+  "parsekit_tools.formats.html": 'html'
+  "parsekit_tools.transform.strings" : "strings"
+  "parsekit_tools.transform.filter": "filter"
+  "parsekit_tools.load": "load"
+
+transform:
+  - step: Set the Operators table schema
+    action: schema.SetSchema
+    scope: parser
+    fields:
+      - name: title
+        type: string
+      - name: url
+        type: string
+      - name: points
+        type: integer
+
+
+  - step: Scrape Records off the Page
+    action: html.ReadRecords
+    record_selector: .entry
+    extract:
+      - selector: a
+        child_index: 1
+        property: text
+        ignore_missing: yes
+      - selector: a
+        child_index: 1
+        attribute: href
+        ignore_missing: yes
+      - selector: a > p > span + span
+        child_index: 0
+        property: text
+        ignore_missing: yes
+
+  - step: Coerce date field empty string to None
+    action: strings.Strip
+
+  - step: Coerce date field empty string to None
+    action: strings.DisambiguateNulls
+    nulls:
+      - ""
+
+load:
+  - step: Specify Table Name
+    action: load.SetTableName
+    name: hn_article
+
+  - step: Output Records to SQLite Table
+    action: load.OutputSQL
+    overwrite: no
+    upsert: yes
+    repository: sqlite:///.parse/cache.db
+    primary_keys:
+      hn_article:
+        - "title"
+        - "url"

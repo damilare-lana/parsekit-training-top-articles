@@ -1,0 +1,17 @@
+###
+# top_articles
+# 2016-08-17
+###
+
+dependencies:
+  "parsekit_tools.extract.http": "http"
+
+extract:
+  - step: Download Ranking Page
+    action: http.DownloadFiles
+    fetch:
+      - https://hckrnews.com/
+
+  - step: Apply the Codec on the Hacker News Top Page
+    action: parsekit.ApplyCodec
+    codec: hn_articles

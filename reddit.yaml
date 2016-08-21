@@ -1,0 +1,20 @@
+###
+# top_articles
+# 2016-08-17
+###
+
+dependencies:
+  "parsekit_tools.extract.http": "http"
+
+extract:
+  - step: Download Ranking Page
+    action: http.Request
+    urls:
+      - https://www.reddit.com/r/programming
+    headers:
+      User-Agent: Mozilla/5.0
+
+
+  - step: Apply the Codec on the Hacker News Top Page
+    action: parsekit.ApplyCodec
+    codec: reddit_articles

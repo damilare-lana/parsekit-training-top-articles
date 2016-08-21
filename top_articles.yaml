@@ -1,0 +1,38 @@
+###
+# top_articles
+# 2016-08-17
+###
+
+dependencies:
+  "parsekit_tools.emit": "emit"
+
+extract:
+  - step: Emit SQL Call
+    action: emit.EmitPaths
+    paths:
+      - >
+        SELECT title,
+               a.url,
+               points,
+               source,
+               CASE
+                 WHEN b.rank IS NOT NULL THEN 1
+                 ELSE 0
+               END AS is_top_source
+        FROM   (SELECT title,
+                       url,
+                       Cast(points AS BIGINT) AS points,
+                       "reddit"               AS source
+                FROM   reddit_article
+                UNION ALL
+                SELECT title,
+                       url,
+                       points,
+                       "hacker news" AS source
+                FROM   hn_article) a
+               LEFT OUTER JOIN top_sites b
+                            ON a.url LIKE '%'|| b.url || '%'; 
+
+  - step: Apply the Codec on the Hacker News Top Page
+    action: parsekit.ApplyCodec
+    codec: articles

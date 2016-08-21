@@ -1,0 +1,59 @@
+###
+# sites
+###
+
+dependencies:
+  "parsekit_tools.schema": "schema"
+  "parsekit_tools.formats.html": 'html'
+  "parsekit_tools.transform.strings" : "strings"
+  "parsekit_tools.transform.filter": "filter"
+  "parsekit_tools.load": "load"
+  "lib.split_rank": "split_rank"
+
+transform:
+  - step: Set the Operators table schema
+    action: schema.SetSchema
+    scope: parser
+    fields:
+      - name: url
+        type: string
+      - name: name
+        type: string
+
+  - step: Scrape Records off the Page
+    action: html.ReadRecords
+    record_selector: div p + p + p + p
+    extract:
+      - selector: a
+        child_index: 0
+        attribute: href
+        ignore_missing: yes
+      - selector: a strong
+        child_index: 0
+        property: text
+        ignore_missing: yes
+
+  - step: Split Rank
+    action: split_rank.SplitRank
+
+  - step: Coerce date field empty string to None
+    action: strings.Strip
+
+  - step: Coerce date field empty string to None
+    action: strings.DisambiguateNulls
+    nulls:
+      - ""
+
+load:
+  - step: Specify Table Name
+    action: load.SetTableName
+    name: top_sites
+
+  - step: Output Records to SQLite Table
+    action: load.OutputSQL
+    overwrite: no
+    upsert: yes
+    repository: sqlite:///.parse/cache.db
+    primary_keys:
+      top_sites:
+        - "url"

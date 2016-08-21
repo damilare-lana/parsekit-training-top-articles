@@ -1,0 +1,63 @@
+###
+# reddit_articles
+###
+
+dependencies:
+  "parsekit_tools.schema": "schema"
+  "parsekit_tools.formats.html": 'html'
+  "parsekit_tools.transform.strings" : "strings"
+  "parsekit_tools.transform.filter": "filter"
+  "parsekit_tools.load": "load"
+
+transform:
+  - step: Set the Operators table schema
+    action: schema.SetSchema
+    scope: parser
+    fields:
+      - name: title
+        type: string
+      - name: url
+        type: string
+      - name: points
+        type: string
+
+
+  - step: Scrape Records off the Page
+    action: html.ReadRecords
+    record_selector: .thing
+    extract:
+      - selector: div > p > a
+        child_index: 0
+        property: text
+        ignore_missing: yes
+      - selector: div > p > a
+        child_index: 0
+        attribute: href
+        ignore_missing: yes
+      - selector:  div .likes
+        child_index: 0
+        property: text
+        ignore_missing: yes
+
+  - step: Get rid of garbage characters
+    action: strings.Strip
+
+  - step: Coerce empty strings to Null
+    action: strings.DisambiguateNulls
+    nulls:
+      - ""
+
+load:
+  - step: Specify Table Name
+    action: load.SetTableName
+    name: reddit_article
+
+  - step: Output Records to SQLite Table
+    action: load.OutputSQL
+    overwrite: no
+    upsert: yes
+    repository: sqlite:///.parse/cache.db
+    primary_keys:
+      reddit_article:
+        - "title"
+        - "url"

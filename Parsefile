@@ -1,0 +1,21 @@
+###
+# Parsefile for top_articles
+# 2016-08-17
+###
+
+name: top_articles
+description: Example parser to extract top articles from a selection of popular websites.
+maintainers:
+  - Niger Little-Poole <niger.little-poole@enigma.io>
+version: "0.1.0"
+license: None
+source_urls:
+  - https://hckrnews.com/
+  - http://www.ebizmba.com/articles/news-websites
+  - https://www.reddit.com/r/programming
+
+extract:
+  - most_popular.yaml
+  - hacker_news.yaml
+  - reddit.yaml
+  - top_articles.yaml

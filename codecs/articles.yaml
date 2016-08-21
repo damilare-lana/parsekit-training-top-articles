@@ -1,0 +1,47 @@
+###
+# hn_articles
+###
+
+dependencies:
+  "parsekit_tools.schema": "schema"
+  "parsekit_tools.formats.sql": 'sql'
+  "parsekit_tools.load": "load"
+  "lib.add_timestamp": "add_timestamp"
+
+transform:
+  - step: Set the Operators table schema
+    action: schema.SetSchema
+    scope: parser
+    fields:
+      - name: title
+        type: string
+      - name: url
+        type: string
+      - name: points
+        type: integer
+      - name: source
+        type: string
+      - name: is_from_top_source
+        type: integer
+
+
+  - step: Scrape Records off the Page
+    action: sql.ReadRecords
+    connection_string: sqlite:///.parse/cache.db
+
+  - step: Add Timestamp to each record indicated when it was parsed
+    action: add_timestamp.AddTimestamp
+
+load:
+  - step: Specify Table Name
+    action: load.SetTableName
+    name: top_articles
+
+  - step: Output Records to SQLite Table
+    action: load.OutputSQL
+    overwrite: yes
+    repository: sqlite:///result.db
+    primary_keys:
+      top_articles:
+        - "url"
+        - "title"

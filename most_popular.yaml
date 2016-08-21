@@ -1,0 +1,17 @@
+###
+# top_articles
+# 2016-08-17
+###
+
+dependencies:
+  "parsekit_tools.extract.http": "http"
+
+extract:
+  - step: Download Ranking Page
+    action: http.DownloadFiles
+    fetch:
+      - http://www.ebizmba.com/articles/news-websites
+
+  - step: Apply the Codec on the Ranking Page Records
+    action: parsekit.ApplyCodec
+    codec: sites
