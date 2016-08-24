@@ -1,3 +1,2 @@
-parsekit==1.1.1
-parsekit-io-tools==0.2.1
--e git+ssh://git@github.com/bibliotech/parsekit-tools-python.git@c1743ef40135c4a6e6ec09384017035ff3f916f0#egg=parsekit_tools
+parsekit==1.1.2
+parsekit_tools=1.1.2
