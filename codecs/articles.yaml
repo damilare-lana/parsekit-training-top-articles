@@ -35,13 +35,21 @@ transform:
 load:
   - step: Specify Table Name
     action: load.SetTableName
-    name: top_articles
+    table_name: top_articles
 
   - step: Output Records to SQLite Table
     action: load.OutputSQL
-    overwrite: yes
+    #overwrite: yes
+    #upsert: yes
     repository: sqlite:///result.db
-    primary_keys:
-      top_articles:
-        - "url"
-        - "title"
+    deltas:
+      top_sites:
+        - title
+        - url
+        - points
+        - source
+        - is_from_top_source
+    # primary_keys:
+    #   top_articles:
+    #     - "url"
+    #     - "title"

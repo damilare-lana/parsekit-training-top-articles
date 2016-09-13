@@ -47,7 +47,7 @@ transform:
 load:
   - step: Specify Table Name
     action: load.SetTableName
-    name: top_sites
+    table_name: top_sites
 
   - step: Output Records to SQLite Table
     action: load.OutputSQL

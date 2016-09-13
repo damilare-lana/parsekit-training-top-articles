@@ -50,7 +50,7 @@ transform:
 load:
   - step: Specify Table Name
     action: load.SetTableName
-    name: hn_article
+    table_name: hn_article
 
   - step: Output Records to SQLite Table
     action: load.OutputSQL
